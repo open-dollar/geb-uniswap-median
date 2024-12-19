@@ -23,9 +23,9 @@ contract DeployUniswapConverterBasicAveragePriceFeedMedianizer is Script, DSTest
     address constant MAINNET_PENDLE = 0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8;
 
     uint256 uniswapMedianizerDefaultAmountIn = 1 ether;
-    uint256 uniswapMedianizerWindowSize = 86400; // 1 hours
+    uint256 uniswapMedianizerWindowSize = 86400; // 24 hours
     uint256 converterScalingFactor = 1 ether;
-    uint8 uniswapMedianizerGranularity = 24; // 1 minute
+    uint8 uniswapMedianizerGranularity = 24; // 1 hour (ie. 86400 / 24 = 3600)
 
     function run() public {
         vm.startBroadcast();
