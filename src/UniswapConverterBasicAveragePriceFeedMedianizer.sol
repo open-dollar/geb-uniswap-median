@@ -225,7 +225,7 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
     **/
     function getFirstObservationsInWindow()
       private view returns (UniswapObservation storage firstUniswapObservation, ConverterFeedObservation storage firstConverterFeedObservation) {
-        uint8 observationIndex = observationIndexOf(now);
+        uint8 observationIndex = observationIndexOf(block.timestamp);
         // No overflow issue. If observationIndex + 1 overflows, result is still zero
         uint8 firstObservationIndex   = (observationIndex + 1) % granularity;
         firstUniswapObservation       = uniswapObservations[firstObservationIndex];
@@ -241,7 +241,7 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
           UniswapObservation storage firstUniswapObservation,
         ) = getFirstObservationsInWindow();
 
-        uint timeElapsedSinceFirstUniObservation = subtract(now, firstUniswapObservation.timestamp);
+        uint timeElapsedSinceFirstUniObservation = subtract(block.timestamp, firstUniswapObservation.timestamp);
         // We can only fetch a brand new median price if there's been enough price data gathered
         if (both(timeElapsedSinceFirstUniObservation <= windowSize, timeElapsedSinceFirstUniObservation >= windowSize - periodSize * 2)) {
           (address token0,) = sortTokens(targetToken, denominationToken);
@@ -321,14 +321,14 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
         address finalFeeReceiver = (feeReceiver == address(0)) ? msg.sender : feeReceiver;
 
         // Update the converter's median price first
-        try converterFeed.updateResult(finalFeeReceiver) {}
-        catch (bytes memory converterRevertReason) {
-          emit FailedConverterFeedUpdate(converterRevertReason);
-        }
+        // try converterFeed.updateResult(finalFeeReceiver) {}
+        // catch (bytes memory converterRevertReason) {
+        //   emit FailedConverterFeedUpdate(converterRevertReason);
+        // }
 
         // Get the observation for the current period
-        uint8 observationIndex         = observationIndexOf(now);
-        uint256 timeElapsedSinceLatest = subtract(now, uniswapObservations[observationIndex].timestamp);
+        uint8 observationIndex         = observationIndexOf(block.timestamp);
+        uint256 timeElapsedSinceLatest = subtract(block.timestamp, uniswapObservations[observationIndex].timestamp);
         // We only want to commit updates once per period (i.e. windowSize / granularity)
         require(timeElapsedSinceLatest > periodSize, "UniswapConverterBasicAveragePriceFeedMedianizer/not-enough-time-elapsed");
 
@@ -349,7 +349,7 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
 
         // Calculate latest medianPrice
         medianPrice    = getMedianPrice(uniswapPrice0Cumulative, uniswapPrice1Cumulative);
-        lastUpdateTime = now;
+        lastUpdateTime = block.timestamp;
         updates        = addition(updates, 1);
 
         emit UpdateResult(medianPrice, lastUpdateTime);
@@ -375,11 +375,11 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
         require(hasValidValue, "UniswapConverterBasicAveragePriceFeedMedianizer/invalid-converter-price-feed");
 
         // Add converter observation
-        latestConverterFeedObservation.timestamp   = now;
+        latestConverterFeedObservation.timestamp   = block.timestamp;
         latestConverterFeedObservation.price       = priceFeedValue;
 
         // Add Uniswap observation
-        latestUniswapObservation.timestamp        = now;
+        latestUniswapObservation.timestamp        = block.timestamp;
         latestUniswapObservation.price0Cumulative = uniswapPrice0Cumulative;
         latestUniswapObservation.price1Cumulative = uniswapPrice1Cumulative;
 
