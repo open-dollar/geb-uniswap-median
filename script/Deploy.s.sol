@@ -45,17 +45,33 @@ contract DeployUniswapConverterBasicAveragePriceFeedMedianizer is Script, DSTest
         uniswapEPendleUsdMedianizer.modifyParameters("targetToken", MAINNET_E_PENDLE);
         uniswapEPendleUsdMedianizer.modifyParameters("denominationToken", MAINNET_PENDLE);
 
-        uniswapEPendleUsdMedianizer.updateResult(address(0));
-        (uint256 result,) = uniswapEPendleUsdMedianizer.getResultWithValidity();
-        emit log_uint(result);
+        // vm.warp(now + 3599);
 
-        emit log_uint(block.timestamp);
-        vm.warp(block.timestamp + 30 minutes);
-        vm.roll(100);
-        emit log_uint(block.timestamp);
+        uniswapEPendleUsdMedianizer.updateResult(address(this));
+        // (uint256 uniTimestamp, uint256 price0Cumulative, uint256 price1Cumulative) =
+        //     uniswapEPendleUsdMedianizer.uniswapObservations(0);
+        // (uint256 medianPrice, bool isValid) = uniswapEPendleUsdMedianizer.getResultWithValidity();
 
-        uniswapEPendleUsdMedianizer.updateResult(address(0));
+        // assertEq(uint256(uniswapEPendleUsdMedianizer.observationIndexOf(now)), 0);
+        // assertEq(medianPrice, 0);
+        // assertTrue(!isValid);
+        // assertEq(uniTimestamp, now);
 
-        uniswapEPendleUsdMedianizer.getResultWithValidity();
+        // vm.warp(now + uniswapEPendleUsdMedianizer.periodSize());
+        // // vm.warp(block.timestamp + 30 minutes);
+        // uniswapEPendleUsdMedianizer.updateResult(address(0));
+        // (uint256 result,) = uniswapEPendleUsdMedianizer.getResultWithValidity();
+        // emit log_uint(result);
+
+        // emit log_uint(block.timestamp);
+        // // vm.warp(block.timestamp + 30 minutes);
+        // // vm.roll(100);
+        // vm.warp(now + 3599);
+
+        // emit log_uint(block.timestamp);
+
+        // uniswapEPendleUsdMedianizer.updateResult(address(0));
+
+        // uniswapEPendleUsdMedianizer.getResultWithValidity();
     }
 }

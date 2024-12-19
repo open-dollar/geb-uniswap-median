@@ -372,7 +372,7 @@ contract UniswapConverterBasicAveragePriceFeedMedianizer is GebMath, UniswapV2Li
 
         // Add converter feed observation
         (uint256 priceFeedValue, bool hasValidValue) = converterFeed.getResultWithValidity();
-        // require(hasValidValue, "UniswapConverterBasicAveragePriceFeedMedianizer/invalid-converter-price-feed");
+        require(hasValidValue, "UniswapConverterBasicAveragePriceFeedMedianizer/invalid-converter-price-feed");
 
         // Add converter observation
         latestConverterFeedObservation.timestamp   = block.timestamp;
